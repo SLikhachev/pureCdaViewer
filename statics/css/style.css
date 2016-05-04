@@ -1,0 +1,87 @@
+/* Custom Stylesheet */
+/**
+ * Use this file to override Materialize files so you can update
+ * the core Materialize files in the future
+ *
+ * Made By MaterializeCSS.com
+ */
+
+.color-prim { color: #01939A }	/* Main Primary color */
+.bg-color-p { background-color: #01939A  } 
+
+.color-prim-1 { color: #47AFB3 } /* lighter,  light */
+.bg-color-p-1 { background-color: #47AFB3  } 
+
+.color-prim-2 { color: #259BA0 }
+.bg-color-p-2 { background-color: #259BA0  } 
+
+.color-prim-3 { color: #017277 } /*dark, darker*/
+.bg-color-p-3 { background-color: #017277  } 
+
+.color-prim-4 { color: #00595E }
+.bg-color-p-4 { background-color: #00595E  } 
+
+/* ========================== */
+.color-sec-1 { color: #FFAB00 }	/* Main Secondary color (1) red */
+.bg-color-s-1 { background-color:  #FFAB00 } 
+
+.color-sec-1-1 { color: #FFCC63 }
+.bg-color-s-1-1 { background-color: #FFCC63 } 
+
+.color-sec-1-2 { color: #FFBE39 }
+.bg-color-s-1-2 { background-color: #FFBE39  } 
+
+.color-sec-1-3 { color: #C58400 }
+.bg-color-s-1-3 { background-color: #C58400  } 
+
+.color-sec-1-4 { color: #9B6800 }
+.bg-color-s-1-4 { background-color: #9B6800  } 
+
+/* ========================== */
+.color-sec-2 { color: #FF0700 }	/* Main Secondary color (2) orange */
+.bg-color-s-1 { background-color: #FF0700} 
+
+.color-sec-2-1 { color: #FF6763 }
+.bg-color-s-2-1 { background-color: #FF6763 } 
+
+.color-sec-2-2 { color: #FF3E39 }
+.bg-color-s-2-2 { background-color: #FF3E39  } 
+
+.color-sec-2-3 { color: #C50500 }
+.bg-color-s-2-3 { background-color: #C50500 } 
+
+.color-sec-2-4 { color: #9B0400 }
+.bg-color-s-2-4 { background-color: #9B0400  } 
+
+
+ html {
+    font-family: 'Open Sans', sans-serif;
+    color: #000;
+  }
+  
+  .light-font {
+    font-weight: 300;
+  }
+ .navbar-fixed, nav {
+     
+ }
+
+nav button.btn:hover{ 
+	background-color: #01939A
+}
+
+a#fft { 
+	margin-left: 40px;
+	border: 1px solid #fff;
+	margin-bottom: 4px;
+}
+
+div#file-form {
+	width: 450px;
+	height: 250px;
+	padding: 10px;
+}
+form#open-form button { float: right; }
+
+
+footer {background-color: #fff;}
