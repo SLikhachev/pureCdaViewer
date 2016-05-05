@@ -3,7 +3,7 @@
 module Cda.Handlers where
 
 import  System.IO
--- import System.Directory
+import System.FilePath ( (</>), (<.>) ) 
 -- import System.Environment
 import  Data.Maybe ( fromJust, maybe )
 -- import Control.Monad 
@@ -13,6 +13,7 @@ import  Control.Monad.IO.Class as LIO
 import  qualified Data.ByteString as BS
 import  qualified Data.ByteString.Lazy as BL
 import  qualified Data.Text as T
+import  Data.Int
 
 import  Snap.Core
 import  Snap
@@ -28,11 +29,13 @@ import  Snap.Snaplet.Session
 -- import  qualified  Text.XmlHtml as X
 -- import  qualified Data.Aeson as A
 
+import  Data.UUID.V1 (nextUUID)
+import  qualified Data.UUID as UID
 import  Text.XML.Expat.Tree
 -- import Text.XML.Expat.Format
 import  Text.XML.Expat.Proc
 -- import qualified Text.XML.Expat.Lens.Unqualified as XL
--- import Control.Lens 
+import Control.Lens ( view )
 -- import Data.Default (def)
 
 import  Heist
@@ -40,11 +43,13 @@ import  qualified Heist.Interpreted as I
 -- import  qualified Heist.Compiled as C
 -- import  qualified Heist.Compiled.LowLevel as LL
 import  Application
+import  qualified Cda.Types as VT
 
 ------------------------------------------------------------------------
 
-mB = 2^(20::Int)
-maxMb = 2 * mB
+-- mB = 2^(20::Int)
+-- maxMb::Int
+maxMb = 2 * (1048576::Int64)
 
 cdaUpl:: UploadPolicy -> UploadPolicy
 -- cdaDefaultPolicy = setMaximumFormInputSize (maxMb * megaByte) defaultUploadPolicy
@@ -52,41 +57,52 @@ cdaUpl = (setProcessFormInputs True) . (setMaximumFormInputSize maxMb) .
   (setMinimumUploadRate 1024) . (setMinimumUploadSeconds 3 ) . (setUploadTimeout 20)
 thisUpl :: UploadPolicy
 thisUpl = cdaUpl defaultUploadPolicy
-
+{-
 cdaPerPartPolicy :: PartInfo -> PartUploadPolicy
 cdaPerPartPolicy _ = allowWithMaximumSize maxMb
-{-
+
 data PartInfo =
     PartInfo { partFieldName   :: !ByteString
              , partFileName    :: !(Maybe ByteString)
              , partContentType :: !ByteString
              }
 -}
-tempDir::String
-tempDir = "c:/yesod/cda/tmp"
 
 uploadFiles :: AppHandler ()
 uploadFiles = do
   files <- handleMultipart thisUpl $ \part -> do
     content <-  liftM BS.concat consume
     return (part, content)
-  let fs = null files
-  -- liftIO $ putStrLn $ show fs
-  let r = if fs then "/empty" else parseCda (head files)
- 
-  redirect r
-
-  -- render "parse_error"
-
-parseCda:: (PartInfo, BS.ByteString) -> BS.ByteString
-parseCda (partInfo, inputText) = 
+  let 
+    fs = null files
+    (pInf, cStr) = head files 
+    r = if fs then "/empty" else parseCda cStr
+  case r of
+    "/document" -> do 
+      vs <- with viewer $ getSnapletState
+      uuid <- liftIO nextUUID
+      let
+        tdir = view VT.tmpDir $ view snapletValue vs
+        fname = maybe "xxxxxxx" UID.toString uuid
+        file = tdir </> fname <.> "xml"
+      liftIO $ BS.writeFile file cStr
+      with sess $ setInSession "file" file
+      redirect "/document"
+    otherwise -> (redirect r)
+  
+parseCda:: BS.ByteString -> BS.ByteString
+parseCda inputText = 
   let 
     p = parse' defaultParseOptions inputText :: Either XMLParseError (UNode T.Text)
+    l = fromIntegral (BS.length inputText) :: Int64
   in
-  case p of
-    Right cda -> renderCda cda
-    Left err -> "/error"
-{-
+  if l > maxMb then "/toolong" else 
+    case p of
+      Right cda -> "/document"
+      Left err -> "/error"
+
+{-  
+-- liftIO $ putStrLn $ show fs
     renderWithSplices "parse_error" ("error" ## I.textSplice text)
                 where
                   text = T.pack $ show err

@@ -9,7 +9,8 @@
 module Application where
 
 ------------------------------------------------------------------------------
-import Control.Lens
+import System.FilePath ( (</>) ) 
+import Control.Lens (makeLenses) 
 import Snap.Snaplet
 import Snap.Snaplet.Heist
 import Snap.Snaplet.Auth
@@ -17,16 +18,16 @@ import Snap.Snaplet.Session
 import qualified Data.Text as T
 
 import Control.Monad.IO.Class (liftIO)
-import System.Directory (getCurrentDirectory)
+import System.Directory (getCurrentDirectory, createDirectoryIfMissing)
 
 import qualified Cda.Types as CdaT
 
 ------------------------------------------------------------------------------
 
 data App = App  
-  {_heist :: Snaplet (Heist App)
+  { _heist :: Snaplet (Heist App)
   , _sess :: Snaplet SessionManager
-  , _viewer :: Snaplet CdaT.CdaViewerSnaplet
+  , _viewer :: Snaplet CdaT.CdaViewer
   --, _ajax :: Snaplet Ajax
   }
 
@@ -43,9 +44,9 @@ type AppHandler = Handler App App
 
 viewerInit = makeSnaplet "viewer" "Cda viewer snaplet" Nothing $ do
     cwd <- liftIO $ getCurrentDirectory
-    let tmpdir = "tmp"
-    liftIO $ createDirectoryIfMissing False 
-    return (CdaT.CdaViewerSnaplet t)
+    let tmpdir = cwd </> "tmp"
+    liftIO $ createDirectoryIfMissing False tmpdir
+    return (CdaT.CdaViewer tmpdir)
 
 {--ajaxInit :: SnapletLens b Home -> SnapletInit b Ajax
 --ajaxInit _h = makeSnaplet "ajax" "Ajax snaplet" Nothing $ do

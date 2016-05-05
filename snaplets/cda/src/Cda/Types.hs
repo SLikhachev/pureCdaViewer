@@ -7,10 +7,11 @@ import qualified Data.Text as T
 import Control.Lens
 import System.Directory (getCurrentDirectory)
 
-data CdaViewerSnaplet = CdaViewerSnaplet {
-    _tmpdir :: FilePath
+data CdaViewer = CdaViewer {
+    _tmpDir :: FilePath
 }
 
+makeLenses  ''CdaViewer
 {-
 data CdaDoc = CdaDoc {
   

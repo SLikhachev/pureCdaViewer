@@ -36,14 +36,15 @@ import  Cda.Handlers
 -- | The application's routes.
 routes :: [(ByteString, Handler App App ())]
 routes = [
-          ("/", render "index"),
-          ("/empty", render "empty"),
-          ("/success", render "success"),
-          ("/error", render "parser_error"),
-
-          ("/upload", method POST $ uploadFiles),
-          ("/statics", serveDirectory "statics")
-        ]
+  ("/", render "index"),
+  ("/empty", render "empty"),
+  ("/toolong", render "toolong"),
+  ("/error", render "parser_error"),
+  ("/document", render "docunent"),
+  
+  ("/upload", method POST $ uploadFiles),
+  ("/statics", serveDirectory "statics")
+  ]
 
 
 --cSplices :: (Monad m, MonadSnap m) => Splices (C.Splice m)
