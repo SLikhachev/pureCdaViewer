@@ -35,15 +35,16 @@ import  Cda.Handlers
 
 -- | The application's routes.
 routes :: [(ByteString, Handler App App ())]
-routes = [
-  ("/", render "index"),
-  ("/empty", render "empty"),
-  ("/toolong", render "toolong"),
-  ("/error", render "parser_error"),
-  ("/document", render "docunent"),
+routes = 
+  [
+    ("/", ifTop $ homePage),
+    ("/empty", render "_empty"),
+    ("/toolong", render "_toolong"),
+    ("/error", render "_parser_error"),
+    -- ("/document", docunent),
   
-  ("/upload", method POST $ uploadFiles),
-  ("/statics", serveDirectory "statics")
+    ("/upload", method POST $ uploadFiles),
+    ("/statics", serveDirectory "statics")
   ]
 
 
@@ -54,11 +55,13 @@ routes = [
 -- | The application initializer.
 app :: SnapletInit App App
 app = makeSnaplet "cda" "HL7 C-CDA simple viewer application" Nothing $ do
+  addRoutes routes
+  
   h <- nestSnaplet "" heist $ heistInit "templates"
 --  addConfig h $ set scCompiledSplices cSplices mempty
   
   s <- nestSnaplet "sess" sess $
-    initCookieSessionManager "site_key.txt" "sess" (Just 3600)
+    initCookieSessionManager "site_key.txt" "sess" Nothing -- session forever
 
     -- NOTE: We're using initJsonFileAuthManager here because it's easy and
     -- doesn't require any kind of database server to run.  In practice,
@@ -67,6 +70,6 @@ app = makeSnaplet "cda" "HL7 C-CDA simple viewer application" Nothing $ do
   cd <- nestSnaplet "" viewer $ viewerInit
     --as <- nestSnaplet "" ajax $ ajaxInit
 
-  addRoutes routes
+ 
     --addAuthSplices h auth
   return $ App h s cd

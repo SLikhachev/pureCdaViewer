@@ -1,12 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Cda.Handlers where
 
-import  System.IO
-import System.FilePath ( (</>), (<.>) ) 
--- import System.Environment
-import  Data.Maybe ( fromJust, maybe )
--- import Control.Monad 
+import  System.IO (putStrLn)
+import  System.FilePath ( (</>), (<.>) ) 
+import  System.Directory (removeFile, doesFileExist)
+import  Data.Maybe ( fromJust, maybe, fromMaybe )
+import  Control.Monad.Trans.Maybe
 -- import Data.Monoid
 -- import  Control.Applicative
 import  Control.Monad.IO.Class as LIO
@@ -44,7 +45,7 @@ import  qualified Heist.Interpreted as I
 -- import  qualified Heist.Compiled.LowLevel as LL
 import  Application
 import  qualified Cda.Types as VT
-
+import  Cda.Splices
 ------------------------------------------------------------------------
 
 -- mB = 2^(20::Int)
@@ -68,45 +69,126 @@ data PartInfo =
              }
 -}
 
-uploadFiles :: AppHandler ()
-uploadFiles = do
+homePage:: AppHandler ()
+homePage = withSession sess $ do
+  file <-  with sess $ getFromSession "file"
+  case file of 
+    Nothing -> render "_empty"
+    Just ft -> do
+      let fs = T.unpack ft
+      fe <- liftIO (doesFileExist fs)
+      if not fe then render "_empty" else do
+      text <- liftIO $ BS.readFile fs
+      liftIO $ putStrLn fs
+      let
+        p = readCda text
+        err _ = render "_parse_error"
+        sst = (I.textSplice . viewTitle)::UNode T.Text -> I.Splice AppHandler
+        splCda s = ("cdaTitle" ## sst s)::HasHeist App => Splices (I.Splice AppHandler)
+        rCda s = renderWithSplices "_document" $ splCda s
+      either err rCda p
+  
+
+
+{-
+
+      let p = readCda text
+      case p of
+        Left _ -> redirect "error"
+        Right node -> do
+          liftIO $ putStrLn $ T.unpack $ viewTitle node
+          heistLocal (I.bindSplice "cdaTitle" title) $ render "document"
+            where
+          title = I.textSplice $ viewTitle node
+
+
+
+
+            
+          
+
+          either err rCda p
+            where
+              splCda = "cdaTitle" ## (I.textSplice . viewTitle) 
+              rCda = (renderWithSplices "document") . splCda
+
+      -- getCdaDoc $ T.unpack f
+-}
+
+uploadFiles:: AppHandler ()
+uploadFiles = withSession sess $ do
   files <- handleMultipart thisUpl $ \part -> do
     content <-  liftM BS.concat consume
     return (part, content)
   let 
     fs = null files
     (pInf, cStr) = head files 
-    r = if fs then "/empty" else parseCda cStr
+    r = if fs then "/" else parseCda cStr
   case r of
-    "/document" -> do 
-      vs <- with viewer $ getSnapletState
-      uuid <- liftIO nextUUID
-      let
-        tdir = view VT.tmpDir $ view snapletValue vs
-        fname = maybe "xxxxxxx" UID.toString uuid
-        file = tdir </> fname <.> "xml"
-      liftIO $ BS.writeFile file cStr
-      with sess $ setInSession "file" file
-      redirect "/document"
+    "/document" -> newCdaDoc cStr
     otherwise -> (redirect r)
-  
+
+newCdaDoc::BS.ByteString -> AppHandler ()
+newCdaDoc input = do
+  vs <- with viewer $ getSnapletState
+  uuid <- liftIO nextUUID
+  let
+    tdir = view VT.tmpDir $ view snapletValue vs
+    fname = maybe "xxxxxxx" UID.toString uuid
+    file = tdir </> fname <.> "xml"
+  liftIO $ BS.writeFile file input
+  fdel <- with sess $! getFromSession "file"
+  case fdel of
+    Just f -> delFile f
+    Nothing -> return ()
+  with sess $ setInSession "file" (T.pack file) >> commitSession
+  sl <- with sess $ sessionToList
+  liftIO $ putStrLn $ show sl
+  redirect "/"
+
+delFile:: T.Text -> AppHandler ()
+delFile f = do
+  let 
+    fn = T.unpack f
+    rv = liftIO (removeFile fn)
+  fe <- liftIO (doesFileExist fn)
+  when fe rv
+
+readCda:: BS.ByteString -> Either XMLParseError (UNode T.Text)
+readCda text = parse' defaultParseOptions text
+
 parseCda:: BS.ByteString -> BS.ByteString
 parseCda inputText = 
   let 
-    p = parse' defaultParseOptions inputText :: Either XMLParseError (UNode T.Text)
+    p = readCda inputText
     l = fromIntegral (BS.length inputText) :: Int64
   in
-  if l > maxMb then "/toolong" else 
+  if l > maxMb then "/toolong" else
     case p of
       Right cda -> "/document"
       Left err -> "/error"
+{-
+getCdaDoc:: FilePath -> AppHandler ()
+getCdaDoc file = do
+  fe <- liftIO (doesFileExist file)
+  case fe of
+    False -> redirect "/empty"
+    True -> do
+      liftIO $ putStrLn $ show fe
+      text <- liftIO $ BS.readFile file
+      let 
+        p = pCda text
+        err _ = redirect "/error"
+      either err rCda p
 
-{-  
--- liftIO $ putStrLn $ show fs
-    renderWithSplices "parse_error" ("error" ## I.textSplice text)
-                where
-                  text = T.pack $ show err
 
+splCda::Monad m => UNode T.Text -> m (Splices (SnapletISplice n))
+splCda node = 
+  return "cdaTitle" ## I.textSplice title
+    where
+      title = viewTitle node
+-}
+{-
 viewF:: (Monad m, MonadIO m) => [(PartInfo, BS.ByteString)] -> m (Splices (SnapletISplice App))
 viewF fs = do
   let
@@ -115,9 +197,6 @@ viewF fs = do
     fromEt (p, c) = "file" ## I.textSplice $ T.pack $ "herr"
   return ff
 -}
-
-
-
 
 {-    
 -------------------------------------------------------------------------------
