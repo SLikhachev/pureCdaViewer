@@ -62,10 +62,6 @@ app = makeSnaplet "cda" "HL7 C-CDA simple viewer application" Nothing $ do
   
   s <- nestSnaplet "sess" sess $
     initCookieSessionManager "site_key.txt" "sess" Nothing -- session forever
-
-    -- NOTE: We're using initJsonFileAuthManager here because it's easy and
-    -- doesn't require any kind of database server to run.  In practice,
-    -- you'll probably want to change this to a more robust auth backend.
  
   cd <- nestSnaplet "" viewer $ viewerInit
     --as <- nestSnaplet "" ajax $ ajaxInit

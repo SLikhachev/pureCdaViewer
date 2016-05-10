@@ -81,39 +81,10 @@ homePage = withSession sess $ do
       text <- liftIO $ BS.readFile fs
       liftIO $ putStrLn fs
       let
-        p = readCda text
+        p = readCda text -- BS.ByteString -> Either XMLParseError (UNode T.Text)
         err _ = render "_parse_error"
-        sst = (I.textSplice . viewTitle)::UNode T.Text -> I.Splice AppHandler
-        splCda s = ("cdaTitle" ## sst s)::HasHeist App => Splices (I.Splice AppHandler)
-        rCda s = renderWithSplices "_document" $ splCda s
+        rCda cdnode = renderWithSplices "_document" $ cdaDocument cdnode
       either err rCda p
-  
-
-
-{-
-
-      let p = readCda text
-      case p of
-        Left _ -> redirect "error"
-        Right node -> do
-          liftIO $ putStrLn $ T.unpack $ viewTitle node
-          heistLocal (I.bindSplice "cdaTitle" title) $ render "document"
-            where
-          title = I.textSplice $ viewTitle node
-
-
-
-
-            
-          
-
-          either err rCda p
-            where
-              splCda = "cdaTitle" ## (I.textSplice . viewTitle) 
-              rCda = (renderWithSplices "document") . splCda
-
-      -- getCdaDoc $ T.unpack f
--}
 
 uploadFiles:: AppHandler ()
 uploadFiles = withSession sess $ do
@@ -168,37 +139,6 @@ parseCda inputText =
       Right cda -> "/document"
       Left err -> "/error"
 {-
-getCdaDoc:: FilePath -> AppHandler ()
-getCdaDoc file = do
-  fe <- liftIO (doesFileExist file)
-  case fe of
-    False -> redirect "/empty"
-    True -> do
-      liftIO $ putStrLn $ show fe
-      text <- liftIO $ BS.readFile file
-      let 
-        p = pCda text
-        err _ = redirect "/error"
-      either err rCda p
-
-
-splCda::Monad m => UNode T.Text -> m (Splices (SnapletISplice n))
-splCda node = 
-  return "cdaTitle" ## I.textSplice title
-    where
-      title = viewTitle node
--}
-{-
-viewF:: (Monad m, MonadIO m) => [(PartInfo, BS.ByteString)] -> m (Splices (SnapletISplice App))
-viewF fs = do
-  let
-    ff = "files" ## (files fs)
-    files = I.mapSplices $ I.runChildrenWith . fromEt
-    fromEt (p, c) = "file" ## I.textSplice $ T.pack $ "herr"
-  return ff
--}
-
-{-    
 -------------------------------------------------------------------------------
 -- | Handle Ajax page
 ajaxHandler :: Handler App Ajax ()
