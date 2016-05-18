@@ -17,7 +17,11 @@
       
       <div class="nav-wrapper container">
          <ul id="slide-out" class="side-nav">
-          <li><a href="#">Some Link</a></li>
+          <cdaContent>
+          <li>
+            <sTitle />
+          </li>
+          </cdaContent>
         </ul>
         <a href="#" data-activates="slide-out" class="button-collapse show-on-large">
           <i class="material-icons">menu</i>
@@ -30,7 +34,7 @@
     </nav>
   </div>
 
-  <div class="section no-pad-bot" id="index-main">
+  <div class="section" id="index-main">
     <div class="container">
       
 	    <div id="content">
@@ -44,8 +48,8 @@
   </div>
 
 
-  <!--footer class="page-footer">
-  </footer-->
+  <footer></footer>
+
   <div id="file-form" class="modal">
     <form enctype="multipart/form-data" class="" id="open-form" method="POST" action="/upload">
       <div class="file-field input-field">
@@ -57,7 +61,7 @@
           <input class="file-path validate" type="text">
         </div>
       </div>
-      <button class="btn bg-color-p-3" type="submit">open</button>
+      <button class="btn bg-color-p-3 z-depth-0" type="submit">open</button>
     </form>
   </div>
   

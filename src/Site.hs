@@ -61,7 +61,7 @@ app = makeSnaplet "cda" "HL7 C-CDA simple viewer application" Nothing $ do
 --  addConfig h $ set scCompiledSplices cSplices mempty
   
   s <- nestSnaplet "sess" sess $
-    initCookieSessionManager "site_key.txt" "sess" Nothing -- session forever
+    initCookieSessionManager "site_key.txt" "sess" (Just 155952000) -- session forever
  
   cd <- nestSnaplet "" viewer $ viewerInit
     --as <- nestSnaplet "" ajax $ ajaxInit

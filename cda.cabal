@@ -39,6 +39,6 @@ Executable cda
     directory,
     filepath,
     lens,
-    uuid    
+    uuid
  
   ghc-options: -Wall -fwarn-tabs -funbox-strict-fields -fno-warn-orphans
