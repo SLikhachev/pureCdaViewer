@@ -12,8 +12,10 @@ import  Control.Monad.Trans.Maybe
 -- import  Control.Applicative
 import  Control.Monad.IO.Class as LIO
 import  qualified Data.ByteString as BS
+-- import  qualified Data.ByteString.Char8 as CS
 import  qualified Data.ByteString.Lazy as BL
 import  qualified Data.Text as T
+import  qualified Data.Text.Encoding as E
 import  Data.Int
 
 import  Snap.Core
@@ -79,11 +81,18 @@ homePage = withSession sess $ do
       fe <- liftIO (doesFileExist fs)
       if not fe then render "_empty" else do
       text <- liftIO $ BS.readFile fs
-      liftIO $ putStrLn fs
+      -- liftIO $ putStrLn fs
+      rQ <- getRequest
+      -- page <- rqQueryParam "page" rQ
+      pageBy <- with sess $ getFromSession "pageby"
       let
+        page = rqQueryParam "page" rQ
+        rp s = read (T.unpack s) ::Int
+        pBy = maybe 0 rp pageBy -- 0 no pagination
+        pGe = maybe 1 (rp . E.decodeUtf8 . head) page
         p = readCda text -- BS.ByteString -> Either XMLParseError (UNode T.Text)
         err _ = render "_parse_error"
-        rCda cdnode = renderWithSplices "_document" $ cdaDocument cdnode
+        rCda cdnode = renderWithSplices "_document" $ cdaDocument cdnode pBy pGe
       either err rCda p
 
 uploadFiles:: AppHandler ()
@@ -112,9 +121,15 @@ newCdaDoc input = do
   case fdel of
     Just f -> delFile f
     Nothing -> return ()
-  with sess $ setInSession "file" (T.pack file) >> commitSession
+  rQ <- getRequest
+  let 
+    pBy = rqPostParam "pageby" rQ
+    pageby = E.decodeUtf8 $ maybe "0" head pBy
+    
+  with sess $ setInSession "file" (T.pack file) >>
+    setInSession "pageby" pageby >> commitSession
   sl <- with sess $ sessionToList
-  liftIO $ putStrLn $ show sl
+  -- liftIO $ putStrLn $ show sl
   redirect "/"
 
 delFile:: T.Text -> AppHandler ()

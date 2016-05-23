@@ -77,8 +77,8 @@ a#fft {
 }
 
 div#file-form {
-	width: 450px;
-	height: 250px;
+	width: 550px;
+	height: 450px;
 	padding: 10px;
 }
 form#open-form button { float: right; }
@@ -108,5 +108,14 @@ div.next-section div.next-section div.next-section {
 }
 
 #index-main {
-  padding-bottom: 130px;
+  padding-bottom: 300px;
+}
+
+span.pat-name {
+  font-size: 1.3em;
+}
+
+p.tsect-par {
+  padding: 5px;
+  text-indent: 1em;
 }
