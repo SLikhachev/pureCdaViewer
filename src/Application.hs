@@ -13,9 +13,9 @@ import System.FilePath ( (</>) )
 import Control.Lens (makeLenses) 
 import Snap.Snaplet
 import Snap.Snaplet.Heist
-import Snap.Snaplet.Auth
+-- import Snap.Snaplet.Auth
 import Snap.Snaplet.Session
-import qualified Data.Text as T
+-- import qualified Data.Text as T
 
 import Control.Monad.IO.Class (liftIO)
 import System.Directory (getCurrentDirectory, createDirectoryIfMissing)
@@ -41,7 +41,7 @@ instance HasHeist App where
 type AppHandler = Handler App App
 
 ------------------------------------------------------------------------------
-
+viewerInit:: SnapletInit b CdaT.CdaViewer
 viewerInit = makeSnaplet "viewer" "Cda viewer snaplet" Nothing $ do
     cwd <- liftIO $ getCurrentDirectory
     let tmpdir = cwd </> "tmp"

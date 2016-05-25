@@ -1,19 +1,23 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleContexts #-}
 
-module Cda.Handlers where
+module Cda.Handlers (
+  homePage,
+  uploadFiles
+  )
+   where
 
-import  System.IO (putStrLn)
+-- import  System.IO (putStrLn)
 import  System.FilePath ( (</>), (<.>) ) 
 import  System.Directory (removeFile, doesFileExist)
 import  Data.Maybe ( fromJust, maybe, fromMaybe )
-import  Control.Monad.Trans.Maybe
+-- import  Control.Monad.Trans.Maybe
 -- import Data.Monoid
 -- import  Control.Applicative
 import  Control.Monad.IO.Class as LIO
 import  qualified Data.ByteString as BS
 -- import  qualified Data.ByteString.Char8 as CS
-import  qualified Data.ByteString.Lazy as BL
+-- import  qualified Data.ByteString.Lazy as BL
 import  qualified Data.Text as T
 import  qualified Data.Text.Encoding as E
 import  Data.Int
@@ -21,7 +25,7 @@ import  Data.Int
 import  Snap.Core
 import  Snap
 import  Snap.Util.FileUploads
-import  Snap.Snaplet
+-- import  Snap.Snaplet
 import  Snap.Snaplet.Heist
 import  Snap.Iteratee (consume)
 import  Snap.Snaplet.Session
@@ -36,13 +40,13 @@ import  Data.UUID.V1 (nextUUID)
 import  qualified Data.UUID as UID
 import  Text.XML.Expat.Tree
 -- import Text.XML.Expat.Format
-import  Text.XML.Expat.Proc
+-- import  Text.XML.Expat.Proc
 -- import qualified Text.XML.Expat.Lens.Unqualified as XL
 import Control.Lens ( view )
 -- import Data.Default (def)
 
-import  Heist
-import  qualified Heist.Interpreted as I
+-- import  Heist
+-- import  qualified Heist.Interpreted as I
 -- import  qualified Heist.Compiled as C
 -- import  qualified Heist.Compiled.LowLevel as LL
 import  Application
@@ -52,6 +56,7 @@ import  Cda.Splices
 
 -- mB = 2^(20::Int)
 -- maxMb::Int
+maxMb:: Int64
 maxMb = 2 * (1048576::Int64)
 
 cdaUpl:: UploadPolicy -> UploadPolicy
@@ -128,7 +133,7 @@ newCdaDoc input = do
     
   with sess $ setInSession "file" (T.pack file) >>
     setInSession "pageby" pageby >> commitSession
-  sl <- with sess $ sessionToList
+  -- sl <- with sess $ sessionToList
   -- liftIO $ putStrLn $ show sl
   redirect "/"
 

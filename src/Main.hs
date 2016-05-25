@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE CPP             #-}
 {-# LANGUAGE TemplateHaskell #-}
 
@@ -24,6 +25,10 @@ import           Snap.Snaplet.Config
 import           Snap.Core
 import           System.IO
 import           Site
+import  System.Directory
+import  qualified Data.Configurator as C
+import  qualified Data.ByteString as BS
+-- import  Snap.Http.Server.Config
 
 #ifdef DEVELOPMENT
 import           Snap.Loader.Dynamic
@@ -91,7 +96,16 @@ main = do
 -- This action is only run once, regardless of whether development or
 -- production mode is in use.
 getConf :: IO (Config Snap AppConfig)
-getConf = commandLineAppConfig defaultConfig
+getConf = do
+    cwd <- getCurrentDirectory
+    cfg <- loadAppConfig "server.cfg" cwd
+    port <- C.require cfg "port" :: IO Int
+    bind <- C.require cfg "bind" :: IO BS.ByteString
+    vbs <- C.require cfg "verbose" :: IO Bool
+    let 
+      snapCfg = (setPort port) . (setBind bind) . (setVerbose vbs) $ defaultConfig
+    return snapCfg  
+    -- commandLineAppConfig defaultConfig
 
 
 ------------------------------------------------------------------------------
