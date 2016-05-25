@@ -78,7 +78,7 @@ a#fft {
 
 div#file-form {
 	width: 550px;
-	height: 450px;
+	height: 350px;
 	padding: 10px;
 }
 form#open-form button { float: right; }

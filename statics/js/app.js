@@ -43,8 +43,15 @@
       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     function parceDate (d) {
+      if (d.length < 8 ) {
+        return d
+      }
       var yer = d.substring(0, 4);
-      var mon = Months [ parseInt( d.substring(4, 6) ) - 1 ];
+      var m = parseInt( d.substring(4, 6) );
+      if ( isNaN (m) || 1 > m > 12) {
+         return d
+      }
+      var mon = Months [ m - 1 ];
       var d1 = d.substring(6, 7), day;
       if ( d1 == "0") {day = ""} else { day = d1 }
       day += d.substring(7, 8);

@@ -3,13 +3,18 @@
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
-  src: url("../font/material-design-icons/Material-Design-Icons.eot?#iefix&v=1.1.0") format("embedded-opentype"); 
-  src: url("../font/material-design-icons/Material-Design-Icons.eot?v=1.1.0");
+ 
+  
+  src: url("../font/material-design-icons/Material-Design-Icons.ttf") format("truetype"); 
+  src: url("../font/material-design-icons/Material-Design-Icons.woff") format("woff");
+  src: url("../font/material-design-icons/Material-Design-Icons.svg") format("svg");
+  src: url("../font/material-design-icons/Material-Design-Icons.eot") format("embedded-opentype"); 
   src: url("../font/material-design-icons/Material-Design-Icons.woff2") format("woff2");
-  src: url("../font/material-design-icons/Material-Design-Icons.woff?v=1.1.0") format("woff");
-  src: url("../font/material-design-icons/Material-Design-Icons.ttf?v=1.1.0") format("truetype"); 
-  src: url("../font/material-design-icons/Material-Design-Icons.svg?v=1.1.0") format("svg");
+  
+
+
 }
+
 
 .material-icons {
   font-family: 'Material Icons';
@@ -25,4 +30,6 @@
   direction: ltr;
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
 }

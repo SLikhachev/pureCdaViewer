@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
   <title>Simple C-CDA Viewer</title>
   <!-- CSS  -->
-  <link href="../../statics/css/icons.css" type="text/css" rel="stylesheet" media="screen,projection">
-  <link href="../../statics/css/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="../../statics/css/material-icons.css" type="text/css" rel="stylesheet" media="screen,projection">
+  <link href="../../statics/css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   <link href="../../statics/css/open-sans.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   <link href="../../statics/css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 </head>
@@ -18,7 +18,7 @@
       <div class="nav-wrapper container">
         <ul class="right">
           <li><a href="#top-side"><i class="material-icons">home</i></a></li>
-          <li><a href="#top-side" id="folds-all"><i class="material-icons">view_list</i></a></li>
+          <li><a href="#top-side" id="folds-all"><i class="material-icons">&#xe8ef;</i></a></li>
           <li><a href="#top-side" id="unfolds-all"><i class="material-icons">view_agenda</i></a></li>
         </ul>
 <!--
