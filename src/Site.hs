@@ -44,7 +44,8 @@ routes =
     -- ("/document", docunent),
   
     ("/upload", method POST $ uploadFiles),
-    ("/statics", serveDirectory "statics")
+    ("/statics", serveDirectory "statics"),
+    ("", redirect "/")
   ]
 
 --cSplices :: (Monad m, MonadSnap m) => Splices (C.Splice m)

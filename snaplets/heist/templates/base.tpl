@@ -14,7 +14,7 @@
 
   <div class="navbar-fixed" id="top-side">
     <nav class="bg-color-p-1" role="navigation">
-      
+      <div class="left"><span id="pure-cda">pureCDA</span></div>
       <div class="nav-wrapper container">
         <ul class="right">
           <li><a href="#top-side"><i class="material-icons">home</i></a></li>
